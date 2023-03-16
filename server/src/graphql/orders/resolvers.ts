@@ -2,12 +2,31 @@
 import { MyContext } from '../../app';
 import { IOrder } from '../../interfaces/Order.interfaces';
 import { Order } from '../../models/Order';
-import Jwt from 'jsonwebtoken';
+import { IUser } from '../../interfaces/User.interfaces';
+import { isValidToken } from '../../services/jwt';
 
 
  export const orderResolvers = {
   Query: {
-    orders: async (_:any,_arg:any):Promise<any> => {
+    orders: async (
+		_:any,
+		_arg:any,
+		{token}:MyContext
+		):Promise<any> => {
+
+
+		if(!token) throw new Error('Action not allowed');
+
+		let user:IUser | null = null;
+
+		try {
+			user = await isValidToken(token);
+		} catch (error) {
+			throw new Error("Token are no valid");
+		}
+
+		if(user?.role !== "admin") throw new Error("This action is not allowed")
+
 		return await Order.find({})
 			.populate("orderItems")
 			.populate("user");
@@ -17,7 +36,6 @@ import Jwt from 'jsonwebtoken';
 	addOrder: async (
 		_:any,
 		{
-			user,
 			numberOfItems,
 			orderItems,
 			subTotal,
@@ -27,13 +45,20 @@ import Jwt from 'jsonwebtoken';
 		{token}:MyContext
 		):Promise<IOrder> => {
 
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const decoded = Jwt.verify(token, process.env.SECRET_TOKEN!);
+		if(!token) throw new Error('This Action is not allowed');
 
-			console.log(decoded);
+		let user:IUser | null = null;
+
+		try {
+			user = await isValidToken(token);
+		} catch (error) {
+			throw new Error("Token are no valid");
+		}
+
+		if(!user.id) throw new Error('This Action is not allowed');
 
 			const newOrder = Order.build({
-				user,
+				user: user.id,
 				numberOfItems,
 				orderItems,
 				subTotal,
@@ -48,17 +73,27 @@ import Jwt from 'jsonwebtoken';
 
 		updateOrder: async (
 			_:any,{
-			user,
 			numberOfItems,
 			orderItems,
 			subTotal,
 			tax,
 			total,
 		}:IOrder,{token}:MyContext) => {
-			if(!token) throw new Error('Action not allowed');
+			
+			if(!token) throw new Error('This Action is not allowed');
+
+			let user:IUser | null = null;
+
+			try {
+				user = await isValidToken(token);
+			} catch (error) {
+				throw new Error("Token are no valid");
+			}
+
+			if(!user?.id) throw new Error('This Action is not allowed');
 
 			const updatedOrder = await Order.findByIdAndUpdate(user,{
-				user,
+				user: user.id,
 				numberOfItems,
 				orderItems,
 				subTotal,
@@ -68,17 +103,30 @@ import Jwt from 'jsonwebtoken';
 				new: true
 			});
 
-			if(!updatedOrder) throw new Error('User not found');
+			if(!updatedOrder) throw new Error('Order not found');
 			return updatedOrder;
 		},
 
-		deleteOrder: async (_:any,{id}:IOrder,{token}:MyContext):Promise<IOrder> => {
-			if(!token) throw new Error('Action not allowed');
+		deleteOrder: async (
+			_:any,
+			{token}:MyContext):Promise<IOrder> => {
+			
+				if(!token) throw new Error('This Action is not allowed');
 
-			const deletedOrder = await Order.findByIdAndDelete(id);
+				let user:IUser | null = null;
 
-			if(!deletedOrder) throw new Error('Order not found');
-			return deletedOrder;
+				try {
+					user = await isValidToken(token);
+				} catch (error) {
+					throw new Error("Token are no valid");
+				}
+
+				if(!user?.id) throw new Error('This Action is not allowed');
+
+				const deletedOrder = await Order.findOneAndDelete({user: user.id});
+
+				if(!deletedOrder) throw new Error('Order not found');
+				return deletedOrder;
 		}
   	},
 	

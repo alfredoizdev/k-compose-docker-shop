@@ -19,7 +19,6 @@ export const orderTypeDefs = `#graphql
 
 	type Mutation {
   		addOrder(
-			user: String!
 			orderItems: [String]!
 			numberOfItems: Int!
 			subTotal: Int!
@@ -28,7 +27,6 @@ export const orderTypeDefs = `#graphql
 			): Order
 
 		updateOrder(
-			user: String!
 			orderItems: [ProductInput]
 			numberOfItems: Int
 			subTotal: Int
