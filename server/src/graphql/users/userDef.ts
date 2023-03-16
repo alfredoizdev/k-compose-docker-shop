@@ -10,14 +10,15 @@ export const userTypeDefs = `#graphql
 
 	extend type Query {
 		users: [User]
+		userLogin(email:String, password: String): String
 	}
 
 	type Mutation {
   		addUser(
-			name: String!, 
-			last: String!, 
-			email: String!, 
-			password: String!, 
+			name: String!
+			last: String! 
+			email: String! 
+			password: String! 
 			role: String!
 			): String
 

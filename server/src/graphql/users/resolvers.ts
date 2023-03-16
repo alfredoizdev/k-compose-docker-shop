@@ -3,6 +3,7 @@ import { isValidToken, singToken } from '../../services/jwt';
 import { MyContext } from '../../app';
 import { IUser } from '../../interfaces/User.interfaces';
 import { User } from '../../models/User';
+import { Password } from '../../services/password';
 
 
 
@@ -12,6 +13,35 @@ import { User } from '../../models/User';
     users: async (_:any,_arg:any,{token}:MyContext) => {
 		if(!token) throw new Error('Action not allowed');
 		return await User.find({});
+	},
+	userLogin: async (
+		_:any,
+		{
+			email,
+			password
+
+		}:IUser):Promise<string> => {
+		
+			const exitingUser = await User.findOne({email});
+
+			if(!exitingUser) {
+				throw new Error('Invalid credential');
+			}
+			
+			const passwordMatch = await Password
+					.compare(exitingUser.password, password);
+
+			if(!passwordMatch) {
+				throw new Error('Invalid credential');
+			}
+
+			const token = singToken(
+				exitingUser.id,
+				exitingUser.email,
+				exitingUser.role
+			);
+
+			return token;
 	}
   },
   Mutation: {
