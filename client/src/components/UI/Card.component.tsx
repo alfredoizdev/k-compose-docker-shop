@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { format } from "../../utils/currency";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../app/features/cart/cartSlice";
 
 interface CardComponentProps {
 	product: IProduct
@@ -22,6 +24,13 @@ const CustomCard = styled('div')`
 `;
 
 const CardComponent = ({ product }: CardComponentProps) => {
+
+	const dispatch = useDispatch();
+
+	const handleAddToCart = () => {
+		dispatch(addToCart(product));
+	}
+
 	return (
 		<CustomCard>
 			<img src={product.img || '/img/img6.webp'} alt={product.title} />
@@ -42,7 +51,12 @@ const CardComponent = ({ product }: CardComponentProps) => {
 				variant="subtitle1">
 				{format(Number(product.price))}
 			</Typography>
-			<Button sx={{ mt: 1 }} variant="outlined">Shop It</Button>
+			<Button
+				onClick={handleAddToCart}
+				sx={{ mt: 1 }}
+				variant="outlined">
+				Shop It
+			</Button>
 		</CustomCard>
 	);
 }

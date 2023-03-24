@@ -27,7 +27,7 @@ export const productSlice = createSlice({
 		setProduct: (state, action: PayloadAction<IProduct>) => {
 			if(!action.payload) return;
 
-			state.products.push(action.payload)
+			state.products.unshift(action.payload)
 		},
 
 		removeProduct: (state, action: PayloadAction<IProduct>) => {

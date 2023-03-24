@@ -2,7 +2,6 @@ import Paper from '@mui/material/Paper';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -16,10 +15,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Icon from '@mui/material/Icon';
 import Box from '@mui/system/Box';
+
 import { theme } from '../../theme/theme';
 import { RootState } from '../../app/store';
 import { IMenu } from '../../interfaces/Menu.interfaces';
 import { removeUser } from '../../app/features/user/userSlice';
+import CartComponent from '../cart/Cart.component';
 
 
 const menuData: IMenu[] = [
@@ -67,8 +68,6 @@ const Button = styled("button")`
 	border: none;
 	background: transparent;
 	padding: 5px;
-	background: #ececec;
-	border-radius: 50%;
 	margin-left: 10px;
 	svg {
 		font-size: 30px;
@@ -76,6 +75,7 @@ const Button = styled("button")`
 `;
 
 const NavbarComponent = () => {
+
 	const { role, name, id } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
@@ -109,9 +109,7 @@ const NavbarComponent = () => {
 								Hi {name}
 							</Typography>
 						}
-						<Button onClick={() => navigate("/cart")}>
-							<ShoppingBagOutlinedIcon />
-						</Button>
+						<CartComponent />
 						<Button
 							onClick={handleOnClick}
 						>

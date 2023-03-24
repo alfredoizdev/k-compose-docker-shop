@@ -6,6 +6,9 @@ import { GET_PRODUCTS } from '../graphql/queries';
 import { IQueryProduct } from '../interfaces/Product.interfaces';
 import CardComponent from '../components/UI/Card.component';
 import Container from '@mui/material/Container';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { setListProduct } from '../app/features/product/productSlice';
 
 const Main = styled('main')`
 	
@@ -14,10 +17,21 @@ const Main = styled('main')`
 const ProductPage = () => {
 
 	const { data, loading, error } = useQuery<IQueryProduct>(GET_PRODUCTS);
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		if (localStorage.getItem("cart")) {
+			const list = JSON.parse(localStorage.getItem("cart")!);
+			dispatch(setListProduct(list));
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	if (error) return <h2>Opps something went wrong!</h2>
 	if (loading) return <LoadingComponent />
 	if (!data) return <h2>Products not found</h2>
+
 
 	const { products } = data;
 
