@@ -15,6 +15,7 @@ import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
 import Paper from '@mui/material/Paper';
 import UploadFiles from "../UploadFiles/UploadFiles";
+import { IProduct } from '../../interfaces/Product.interfaces';
 
 const steps = [
 	{
@@ -47,7 +48,7 @@ interface Props {
 
 const CreateProduct = ({ setOpen }: Props) => {
 	const [notification, setNotification] = useState({ open: false, message: "", error: false });
-	const [id, setId] = useState("");
+	const [product, setProduct] = useState<IProduct | null>(null);
 
 	const [activeStep, setActiveStep] = useState(0);
 
@@ -81,8 +82,7 @@ const CreateProduct = ({ setOpen }: Props) => {
 
 	const [addProduct, { loading }] = useMutation(M_ADD_PRODUCT, {
 		onCompleted({ addProduct }) {
-			console.log("from here", addProduct.id)
-			setId(addProduct.id);
+			setProduct(addProduct);
 			handleNext();
 		},
 		onError(error) {
@@ -102,9 +102,10 @@ const CreateProduct = ({ setOpen }: Props) => {
 			price,
 			qty,
 			sku,
-			slug,
 			title,
 		} = formValue;
+
+		const setSlug = title.replaceAll(" ", "-").toLocaleLowerCase();
 
 		addProduct({
 			variables: {
@@ -113,8 +114,8 @@ const CreateProduct = ({ setOpen }: Props) => {
 				price,
 				qty,
 				sku,
-				slug,
 				title,
+				slug: setSlug,
 			}
 		});
 	};
@@ -212,25 +213,6 @@ const CreateProduct = ({ setOpen }: Props) => {
 										/>
 									</Box>
 									<Box padding={1}>
-										<TextField
-											id="slug"
-											label="slug"
-											variant="outlined"
-											type="slug"
-											fullWidth
-											autoComplete="slug"
-											placeholder="slug"
-											{...register("formValue.slug", {
-												required:
-													"The slug field are required",
-											})}
-											error={!!errors.formValue?.qty}
-											helperText={
-												errors.formValue?.qty?.message
-											}
-										/>
-									</Box>
-									<Box padding={1}>
 										{loading ? (
 											<LoadingButton
 												fullWidth
@@ -251,6 +233,15 @@ const CreateProduct = ({ setOpen }: Props) => {
 												Continue
 											</Button>
 										)}
+										<Button
+											sx={{ mt: 1 }}
+											onClick={() => setOpen(false)}
+											variant="contained"
+											color="primary"
+											fullWidth
+										>
+											Cancel
+										</Button>
 										{index !== 0 &&
 											<Button
 												disabled={index === 0}
@@ -278,7 +269,7 @@ const CreateProduct = ({ setOpen }: Props) => {
 						}
 						{step.content === 'upload' &&
 							<StepContent>
-								<UploadFiles handleNext={handleNext} id={id} />
+								<UploadFiles handleNext={handleNext} product={product} />
 								<Box sx={{ mb: 2 }}>
 									<div>
 										<Button

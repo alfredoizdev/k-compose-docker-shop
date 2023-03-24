@@ -11,19 +11,24 @@ import ListItemText from '@mui/material/ListItemText';
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Divider from '@mui/material/Divider';
-import { IMenu } from '../../interfaces/Menu.interfaces';
 import { Typography } from '@mui/material';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Icon from '@mui/material/Icon';
+import Box from '@mui/system/Box';
+import { theme } from '../../theme/theme';
 import { RootState } from '../../app/store';
+import { IMenu } from '../../interfaces/Menu.interfaces';
+import { removeUser } from '../../app/features/user/userSlice';
 
 
 const menuData: IMenu[] = [
-	{ title: "Home", href: "/home", role: "user" },
-	{ title: "Products", href: "/products", role: "user" },
-	{ title: "Login", href: "/login", role: "user" },
-	{ title: "Create Account", href: "/create-account", role: "user" },
-	{ title: "Admin Products", href: "/admin/products", role: "admin" },
-	{ title: "Admin Orders", href: '/admin/orders', role: "admin" },
+	{ title: "Home", href: "/home", role: "user", icon: "home" },
+	{ title: "Products", href: "/products", role: "user", icon: "inventory_2" },
+	{ title: "Login", href: "/login", role: "user", hiddentOnLogin: true, icon: "person" },
+	{ title: "Create Account", href: "/create-account", role: "user", hiddentOnLogin: true, icon: "person_add" },
+	{ title: "Admin Products", href: "/admin/products", role: "admin", icon: "view_comfy_alt" },
+	{ title: "Admin Orders", href: '/admin/orders', role: "admin", icon: "list_alt" },
 ]
 
 const Navbar = styled(Paper)(({ theme }: { theme: Theme }): CSSObject => ({
@@ -54,6 +59,7 @@ const Menu = styled('div')`
 
 const Brand = styled('div')`
 	font-size: 15px;
+	cursor: pointer;
 	
 `;
 
@@ -70,12 +76,12 @@ const Button = styled("button")`
 `;
 
 const NavbarComponent = () => {
-	const { role, name } = useSelector((state: RootState) => state.user)
+	const { role, name, id } = useSelector((state: RootState) => state.user);
+	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
 
 	const handleOnClick = () => {
-		console.log("here")
 		setOpen(true);
 	}
 
@@ -84,11 +90,17 @@ const NavbarComponent = () => {
 		navigate(path);
 	}
 
+	const handleLogOut = () => {
+		dispatch(removeUser());
+		localStorage.removeItem('token');
+		setOpen(false);
+	}
+
 	return (
 		<>
 			<Container>
 				<Navbar>
-					<Brand>
+					<Brand onClick={() => navigate("/home")}>
 						<h1>SHOESSHOP</h1>
 					</Brand>
 					<Menu>
@@ -112,51 +124,112 @@ const NavbarComponent = () => {
 					open={open}
 					onClose={() => setOpen(false)}
 				>
-					<List sx={{ width: 250 }}>
-						{
-							menuData.filter(item => item.role === "user").map((link) => (
-								<ListItem key={link.title} disablePadding>
-									<ListItemButton
-										onClick={() => handleNavigation(link.href)}
-									>
-										<ListItemText
-											primaryTypographyProps={{ fontSize: '18px' }}
-											primary={link.title} />
-									</ListItemButton>
-								</ListItem>
-							))
-						}
-						{role === "admin" &&
-							<>
-								<Divider />
-								<Typography
-									color="text.secondary"
-									sx={{
-										fontSize: 18,
-										padding: 1.8,
-										fontWeight: 800
-									}}
-									variant="subtitle2">
-									Admin
-								</Typography>
-								<Divider />
-								{
-									menuData.filter(item => item.role === "admin").map((link) => (
+					<Box
+						sx={{
+							backgroundColor: theme.palette.primary.main,
+							height: '100%'
+						}}>
+						<List sx={{ width: 250 }}>
+							{
+								menuData.filter(item => item.role === "user")
+									.filter(item => id ? !item.hiddentOnLogin : item)
+									.map((link) => (
 										<ListItem key={link.title} disablePadding>
 											<ListItemButton
 												onClick={() => handleNavigation(link.href)}
 											>
+
+												{link?.icon &&
+													<ListItemIcon
+														sx={{
+															minWidth: 0,
+															mr: open ? 3 : 'auto',
+															justifyContent: 'center',
+															color: 'white',
+														}}
+													>
+														<Icon>{link?.icon}</Icon>
+													</ListItemIcon>
+												}
+
 												<ListItemText
+													sx={{ color: 'white', fontWeight: 100, textTransform: "uppercase" }}
 													primaryTypographyProps={{ fontSize: '18px' }}
 													primary={link.title} />
 											</ListItemButton>
 										</ListItem>
 									))
-								}
-							</>
-						}
+							}
+							{role === "admin" &&
+								<>
+									<Divider />
+									<Typography
+										color="text.secondary"
+										sx={{
+											fontSize: 20,
+											padding: 1.8,
+											fontWeight: 100,
+											color: 'white',
+											textTransform: 'uppercase',
+										}}
+										variant="subtitle2">
+										Admin
+									</Typography>
+									<Divider />
+									{
+										menuData.filter(item => item.role === "admin").map((link) => (
+											<ListItem key={link.title} disablePadding>
+												<ListItemButton
+													onClick={() => handleNavigation(link.href)}
+												>
+													{link?.icon &&
+														<ListItemIcon
+															sx={{
+																minWidth: 0,
+																mr: open ? 3 : 'auto',
+																justifyContent: 'center',
+																color: 'white',
+															}}
+														>
+															<Icon>{link?.icon}</Icon>
+														</ListItemIcon>
+													}
 
-					</List>
+
+													<ListItemText
+														sx={{ color: 'white', fontWeight: 100, textTransform: "uppercase" }}
+														primaryTypographyProps={{ fontSize: '18px' }}
+														primary={link.title} />
+												</ListItemButton>
+											</ListItem>
+										))
+									}
+								</>
+							}
+							<ListItem disablePadding>
+								<ListItemButton
+									onClick={handleLogOut}
+								>
+									<ListItemIcon
+										sx={{
+											minWidth: 0,
+											mr: open ? 3 : 'auto',
+											justifyContent: 'center',
+											color: 'white',
+										}}
+									>
+										<Icon>{"power_setting_new"}</Icon>
+									</ListItemIcon>
+
+									<ListItemText
+										sx={{ color: 'white', fontWeight: 100, textTransform: "uppercase" }}
+										primaryTypographyProps={{ fontSize: '18px' }}
+										primary="Log Out" />
+								</ListItemButton>
+							</ListItem>
+
+						</List>
+					</Box>
 				</Drawer>
 			</Container>
 		</>

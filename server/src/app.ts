@@ -1,15 +1,9 @@
-// import { resolvers, typeDefs } from './graphql/schema';
-// import express from 'express';
-// import { ApolloServer } from '@apollo/server';
-// import { expressMiddleware } from '@apollo/server/express4';
-// import cors from 'cors';
-// import http from 'http';
-
 import { createServer } from 'node:http'
 import { createYoga } from 'graphql-yoga'
 
 import * as dotenv from 'dotenv';
 import { schema } from './graphql/schema';
+
 dotenv.config();
 
 process.env.NODE_ENV = 'development';

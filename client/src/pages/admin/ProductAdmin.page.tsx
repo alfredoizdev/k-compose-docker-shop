@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import Container from "@mui/material/Container";
 import { GET_PRODUCTS } from "../../graphql/queries";
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
@@ -8,8 +8,13 @@ import { IProduct } from '../../interfaces/Product.interfaces';
 import { styled } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useState } from 'react';
 import CreateProduct from "../../components/forms/CreateProduct.component";
+import { useDispatch, useSelector } from "react-redux";
+import { removeProduct, setListProduct } from "../../app/features/product/productSlice";
+import { RootState } from "../../app/store";
+import { M_DELETE_PRODUCR } from "../../graphql/mutations";
 
 
 const HeaderAction = styled('div')`
@@ -19,25 +24,65 @@ const HeaderAction = styled('div')`
 `;
 
 
-const columns: GridColDef[] = [
-	{
-		field: 'img',
-		headerName: 'Img',
-		sortable: false,
-		renderCell: ({ row }: GridRenderCellParams<IProduct>) => {
-			return <img style={{ width: '100%' }} src={row.img || '/img/no-image.jpg'} alt={"img"} />
-		},
-	},
-	{ field: 'title', headerName: 'Title', width: 150 },
-	{ field: 'description', headerName: 'Description', width: 250 },
-	{ field: 'price', headerName: 'Price', width: 150 },
-	{ field: 'sizes', headerName: 'Sizes', width: 150 }
-];
+
 
 const ProductAdminPage = () => {
 
-	const { data, loading, error } = useQuery(GET_PRODUCTS);
+	const columns: GridColDef[] = [
+		{
+			field: 'img',
+			headerName: 'Img',
+			sortable: false,
+			renderCell: ({ row }: GridRenderCellParams<IProduct>) => {
+				return <img style={{ width: '100%' }} src={row.img || '/img/no-image.jpg'} alt={"img"} />
+			},
+		},
+		{ field: 'title', headerName: 'Title', width: 150 },
+		{ field: 'description', headerName: 'Description', width: 250 },
+		{ field: 'price', headerName: 'Price', width: 150 },
+		{ field: 'sizes', headerName: 'Sizes', width: 150 },
+		{
+			field: 'action',
+			headerName: 'Actions',
+			sortable: false,
+			renderCell: ({ row }: GridRenderCellParams<any>) => {
+
+				return <Button onClick={() => handleDelete(row.id)}>
+					<DeleteOutlineIcon />
+				</Button>
+			}
+		}
+	];
+
+
+	const dispatch = useDispatch();
+	const state = useSelector((state: RootState) => state.products);
+
 	const [open, setOpen] = useState(false);
+
+	const [deleteProduct] = useMutation(M_DELETE_PRODUCR, {
+		onCompleted: (data) => {
+			console.log(data.deleteProduct)
+			dispatch(removeProduct(data.deleteProduct));
+		}
+	})
+
+
+	const handleDelete = (id: string) => {
+		deleteProduct({
+			variables: {
+				id
+			}
+		})
+	}
+
+
+	const { loading, error } = useQuery(GET_PRODUCTS, {
+		onCompleted: (data) => {
+			dispatch(setListProduct(data.products));
+		}
+	});
+
 
 	if (loading) return <LoadingComponent />;
 	if (error) return <Typography>Opss!</Typography>
@@ -60,7 +105,7 @@ const ProductAdminPage = () => {
 						width: '100%',
 						padding: '10px 0'
 					}}>
-					<DataGrid rows={data?.products} columns={columns} />
+					<DataGrid rows={state.products} columns={columns} />
 				</div>
 			</Container>
 			<Drawer

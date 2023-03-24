@@ -13,7 +13,6 @@ const Main = styled('main')`
 
 const ProductPage = () => {
 
-
 	const { data, loading, error } = useQuery<IQueryProduct>(GET_PRODUCTS);
 
 	if (error) return <h2>Opps something went wrong!</h2>

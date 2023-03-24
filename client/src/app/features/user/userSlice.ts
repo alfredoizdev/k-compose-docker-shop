@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { ICartProduct } from '../../../interfaces/Cart.interfaces';
 import { IUser } from '../../../interfaces/User.interfaces';
 
 export interface IUserState {
@@ -8,7 +7,7 @@ export interface IUserState {
 	name: string;
 	last: string;
 	email: string;
-	role: "admin" | "user"
+	role: "admin" | "user" | null
 }
 
 
@@ -35,10 +34,17 @@ export const userSlice = createSlice({
 			state.name = name;
 			state.last = last;
 			state.role = role;
+		},
+		removeUser: (state)=> {
+			state.email = "";
+			state.id = "";
+			state.last = "";
+			state.role = null;
+			state.name = "";
 		}
 	}
 });
 
-export const { addUser} = userSlice.actions;
+export const { addUser, removeUser} = userSlice.actions;
 
 export default userSlice.reducer;

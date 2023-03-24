@@ -71,3 +71,15 @@ export const M_UPLOAD_FILE = gql`
 		)
 	}
 `;
+
+export const M_DELETE_PRODUCR = gql`
+	mutation DeleteProduct(
+		$id: ID!
+	) {
+  		deleteProduct(
+			id:$id
+		){
+			id
+		}
+	}
+`;

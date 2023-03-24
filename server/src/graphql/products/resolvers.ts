@@ -37,7 +37,7 @@ import { IUser } from '../../interfaces/User.interfaces';
 				throw new Error("Token are no valid");
 			}
 
-			if(user.role !== "admin") throw new Error("This Action is not Allowed")
+			if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
 
 
 			const newProduct = Product.build({
@@ -52,6 +52,7 @@ import { IUser } from '../../interfaces/User.interfaces';
 				});
 
 				newProduct.save();
+
 				return newProduct;
 
 		},
@@ -80,7 +81,7 @@ import { IUser } from '../../interfaces/User.interfaces';
 						throw new Error("Token are no valid");
 					}
 
-					if(user.role === "admin") throw new Error("This Action is not Allowed")
+					if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
 
 					const updatedProduct = await Product.findByIdAndUpdate(id,{
 						title,
@@ -113,7 +114,9 @@ import { IUser } from '../../interfaces/User.interfaces';
 					throw new Error("Token are no valid");
 				}
 
-				if(user.role === "admin") throw new Error("This Action is not Allowed")
+				console.log(user);
+
+				if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
 
 				const deletedProduct = await Product.findByIdAndDelete(id);
 

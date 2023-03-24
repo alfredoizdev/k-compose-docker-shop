@@ -45,16 +45,16 @@ const productSchema = new Schema({
 	},
 	qty: {
 		type: String,
-		default: "0"
+		default: "0",
 	},
 	role: {
 		type: String,
-        default: 'admin'
+        default: 'admin',
 	},
 	slug: { 
 		type: String, 
 		required: true, 
-		unique: true 
+		unique: true,
 	},
 	img: {
 		type: String, 

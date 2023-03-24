@@ -44,6 +44,7 @@ const LayoutMainComponent = ({ children }: LayoutMainProps) => {
 
 	dispatch(addUser(data?.getCurrentUser));
 
+
 	return (
 		<main>
 			<NavbarComponent />
