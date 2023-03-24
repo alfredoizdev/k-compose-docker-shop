@@ -1,5 +1,5 @@
 
-import { MyContext } from '../../app';
+import { MyContext} from '../../app';
 import { Product } from '../../models/Product';
 import { IProduct } from '../../interfaces/Product.interfaces';
 import { isValidToken } from '../../services/jwt';

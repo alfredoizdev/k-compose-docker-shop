@@ -1,6 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useSelector } from 'react-redux';
-import { RootState } from "../app/store";
+import { useDispatch } from "react-redux";
+import { useQuery } from "@apollo/client";
+import { Q_GET_CURRENT_USER } from "../graphql/queries";
+import LoadingComponent from "../components/UI/Loading.component";
+import { addUser } from "../app/features/user/userSlice";
 
 interface Props {
 	children?: React.ReactElement
@@ -9,11 +12,20 @@ interface Props {
 
 const OnlyAdminGuardComponent = ({ redirectTo = "/home", children = undefined }: Props) => {
 
-	const role = useSelector((state: RootState) => state.user.role)
+	const dispatch = useDispatch();
+	const { loading } = useQuery(Q_GET_CURRENT_USER, {
+		onCompleted: ({ getCurrentUser }) => {
 
-	if (role !== "admin") {
-		return <Navigate to={redirectTo} />
-	}
+			dispatch(addUser(getCurrentUser));
+
+			if (getCurrentUser?.role !== "admin") {
+				return <Navigate to={redirectTo} />
+			}
+		}
+	});
+
+	if (loading) return <LoadingComponent />
+
 
 	return children ? children : <Outlet />;
 }
