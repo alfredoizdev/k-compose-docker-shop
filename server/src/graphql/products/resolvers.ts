@@ -27,6 +27,7 @@ import { IUser } from '../../interfaces/User.interfaces';
 		{token}:MyContext
 		):Promise<IProduct> => {
 
+
 			if(!token) throw new Error('This Action is not Allowed');
 
 			let user:IUser | null = null;

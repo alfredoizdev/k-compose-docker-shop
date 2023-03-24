@@ -1,5 +1,6 @@
 import { Product } from '../../models/Product';
-import { s3 } from '../../aws/s3Client';
+import { s3 } from '../../app';
+
 
 
 

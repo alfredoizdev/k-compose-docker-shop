@@ -3,16 +3,27 @@ import { createYoga } from 'graphql-yoga'
 
 import * as dotenv from 'dotenv';
 import { schema } from './graphql/schema';
+import AWS from 'aws-sdk'
+
 
 dotenv.config();
 
 process.env.NODE_ENV = 'development';
+
+export const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_KEY,
+  params: { Bucket: process.env.BUCKET_NAME }, 
+  secretAccessKey: process.env.AWS_SECRET,
+  region: 'us-east-1',
+});
 
 export type MyContext = {
 	token: string;
 }
 
 export default function startApolloServer() {
+
+	
 	const yoga = createYoga({ 
 		schema,
 		context:  async ({ request }) => {

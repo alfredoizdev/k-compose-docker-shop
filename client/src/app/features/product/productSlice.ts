@@ -31,7 +31,6 @@ export const productSlice = createSlice({
 		},
 
 		removeProduct: (state, action: PayloadAction<IProduct>) => {
-			//state.products.filter((item) => item.id === action.payload.id);
 			state.products.splice(state.products.findIndex((item) => item.id === action.payload.id), 1);
 
 		}
