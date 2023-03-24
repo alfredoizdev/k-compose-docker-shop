@@ -17,6 +17,33 @@ query Products {
     img
     id
     title
+	description
+	price
+	slug
+	sizes
+  }
+}
+`;
+
+export const Q_GET_CURRENT_USER = gql`
+query GetCurrentUser {
+  getCurrentUser {
+    id
+    name
+    last
+    role
+  }
+}
+`;
+
+export const Q_GET_ORDERS = gql`
+query Orders {
+  orders {
+	id
+    subTotal
+    tax
+   	total
+   	numberOfItems
   }
 }
 `;

@@ -1,4 +1,5 @@
 export const userTypeDefs = `#graphql
+
 	type User {
 		id: ID
 		name: String
@@ -10,7 +11,7 @@ export const userTypeDefs = `#graphql
 
 	extend type Query {
 		users: [User]
-		userLogin(email:String, password: String): String
+		getCurrentUser: User
 	}
 
 	type Mutation {
@@ -19,14 +20,14 @@ export const userTypeDefs = `#graphql
 			last: String! 
 			email: String! 
 			password: String! 
-			role: String!
-			): String
+			role: String
+		): String
 
 		updateUser(
 			name: String, 
 			last: String,
 			email: String,
-			): User
+		): User
 
 		deleteUser(id:ID!): User
 	}

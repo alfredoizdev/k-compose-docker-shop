@@ -5,13 +5,10 @@ import { IProduct } from '../../interfaces/Product.interfaces';
 import { isValidToken } from '../../services/jwt';
 import { IUser } from '../../interfaces/User.interfaces';
 
-
-
-
  export const productResolvers = {
   Query: {
     products: async (_:any,_arg:any) => {
-		return await Product.find({});
+		return await Product.find({}).sort({ createdAt: "desc" });
 	}
   },
   Mutation: {
@@ -19,11 +16,13 @@ import { IUser } from '../../interfaces/User.interfaces';
 		_:any,
 		{
 			title,
-			description, 
+			description,
 			sku,
 			img,
 			qty, 
-			price
+			price,
+			slug,
+			sizes
 		}:IProduct,
 		{token}:MyContext
 		):Promise<IProduct> => {
@@ -38,7 +37,7 @@ import { IUser } from '../../interfaces/User.interfaces';
 				throw new Error("Token are no valid");
 			}
 
-			if(user.role === "admin") throw new Error("This Action is not Allowed")
+			if(user.role !== "admin") throw new Error("This Action is not Allowed")
 
 
 			const newProduct = Product.build({
@@ -47,7 +46,9 @@ import { IUser } from '../../interfaces/User.interfaces';
 					sku,
 					img,
 					qty,
-					price
+					price,
+					slug,
+					sizes
 				});
 
 				newProduct.save();
@@ -61,7 +62,11 @@ import { IUser } from '../../interfaces/User.interfaces';
 				id,
 				title,
 				description,
-				qty,price}:IProduct,
+				qty,
+				price,
+				slug,
+				sizes
+			}:IProduct,
 				{token}:MyContext
 				) => {
 					
@@ -81,7 +86,9 @@ import { IUser } from '../../interfaces/User.interfaces';
 						title,
 						description,
 						qty,
-						price
+						price,
+						slug,
+						sizes
 					},{
 						new: true
 					});

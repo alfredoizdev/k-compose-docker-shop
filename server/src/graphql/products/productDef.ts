@@ -9,6 +9,8 @@ export const productTypeDefs = `#graphql
 		price: String
 		img: String
 		sku: String
+		slug: String
+		sizes: [String]
 	}
 
 	extend type Query {
@@ -17,21 +19,23 @@ export const productTypeDefs = `#graphql
 
 	type Mutation {
   		addProduct(
-			title: String!, 
-			description: String!, 
-			qty: String!, 
-			price: String!, 
-			img: String!
-			sku: String!
+			title: String!
+			description: String!
+			qty: String! 
+			price: String!
+			img: String
+			sku: String
+			slug: String!
+			sizes: [String]
 			): Product
 
 		updateProduct(
 			id: ID!
-			title: String, 
-			description: String, 
-			qty: String, 
-			price: String, 
-			img: String,
+			title: String
+			description: String
+			qty: String
+			price: String 
+			img: String
 			sku: String
 			): Product
 

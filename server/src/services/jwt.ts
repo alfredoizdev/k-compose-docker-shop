@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { IUser } from '../interfaces/User.interfaces';
 
-export const singToken = (id: string, email: string, role:string) => {
+export const singToken = ({id,email,role,last,name}:IUser) => {
 	if (!process.env.JWT_SECRET_SEED) {
 		throw new Error(
 			"Is not secret seed for json web token, check env variables"
@@ -13,6 +13,8 @@ export const singToken = (id: string, email: string, role:string) => {
 			id,
 			email,
 			role,
+			last,
+			name
 		},
 		process.env.JWT_SECRET_SEED,
 		{ expiresIn: "30d" }

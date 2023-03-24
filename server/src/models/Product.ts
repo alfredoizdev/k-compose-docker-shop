@@ -1,3 +1,4 @@
+import { IValidSizes } from '@/interfaces/Product.interfaces';
 import {Schema, model, Model, Document } from 'mongoose';
 
 interface IProductAttrs {
@@ -7,6 +8,8 @@ interface IProductAttrs {
 	img: string;
 	price: string;
 	description: string,
+	slug: string,
+	sizes: IValidSizes[],
 }
 
 interface IProductModel extends Model<IProductDoc> {
@@ -20,6 +23,8 @@ interface IProductDoc extends Document {
 	img: string;
 	price: string;
 	description: string,
+	slug: string,
+	sizes: IValidSizes[],
 }
 
 const productSchema = new Schema({
@@ -29,9 +34,12 @@ const productSchema = new Schema({
 	},
 	sku: {
 		type: String,
-		required: true,
 	},
 	price: {
+		type: String,
+		require: true,
+	},
+	description: {
 		type: String,
 		require: true,
 	},
@@ -43,6 +51,23 @@ const productSchema = new Schema({
 		type: String,
         default: 'admin'
 	},
+	slug: { 
+		type: String, 
+		required: true, 
+		unique: true 
+	},
+	img: {
+		type: String, 
+	},
+	sizes: [
+			{
+				type: String,
+				enum: {
+					values: ["5", "6","6.5", "7", "7.5", "9", "10","10.5","11"],
+					message: "{VALUE} is not allowed size",
+				},
+			},
+		],
 
 },{
 	timestamps: true,

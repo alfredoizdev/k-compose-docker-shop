@@ -1,48 +1,40 @@
-
 import { isValidToken, singToken } from '../../services/jwt';
 import { MyContext } from '../../app';
 import { IUser } from '../../interfaces/User.interfaces';
 import { User } from '../../models/User';
-import { Password } from '../../services/password';
-
-
 
 
  export const userResolvers = {
   Query: {
     users: async (_:any,_arg:any,{token}:MyContext) => {
 		if(!token) throw new Error('Action not allowed');
-		return await User.find({});
-	},
-	userLogin: async (
-		_:any,
-		{
-			email,
-			password
 
-		}:IUser):Promise<string> => {
+		let currentRole = "";
 		
-			const exitingUser = await User.findOne({email});
+		try {
+			const {role} = await isValidToken(token);
+			currentRole = role;
+		} catch (error) {
+			throw new Error('Token are no valid');
+		}
 
-			if(!exitingUser) {
-				throw new Error('Invalid credential');
-			}
-			
-			const passwordMatch = await Password
-					.compare(exitingUser.password, password);
+		if(currentRole !== "admin") throw new Error("Action not allowed");
 
-			if(!passwordMatch) {
-				throw new Error('Invalid credential');
-			}
+		return await User.find({});
 
-			const token = singToken(
-				exitingUser.id,
-				exitingUser.email,
-				exitingUser.role
-			);
+	},
+	getCurrentUser:  async (_:any,_arg:any,{token}:MyContext) => {
+		if(!token) throw new Error('Action not allowed');
+		let user = null;
 
-			return token;
-	}
+		try {
+			user = await isValidToken(token);
+		} catch (error) {
+			throw new Error("Token are no valid");
+		}
+
+		return user;
+	},
   },
   Mutation: {
 	addUser: async (
@@ -69,11 +61,7 @@ import { Password } from '../../services/password';
 
 				newUser.save();
 
-				const token = singToken(
-						newUser.id,
-						newUser.email, 
-						newUser.role
-					);
+				const token = singToken(newUser);
 
 				return token;
 		},

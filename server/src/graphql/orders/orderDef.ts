@@ -11,6 +11,7 @@ export const orderTypeDefs = `#graphql
 		subTotal: Int
 		tax: Int
 		total: Int
+		id: ID
 	}
 
 	extend type Query {
