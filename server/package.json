@@ -7,11 +7,12 @@
 		"lint": "eslint src/**/*.ts",
 		"format": "eslint src/**/*.ts --fix",
 		"start:dev": "npm run build:dev",
-		"build:dev": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts -e ts,graphql"
+		"build:dev": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts -e ts,graphql",
+		"pretty": "prettier --write \"src/**/*.ts\""
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "yarn lint"
+			"pre-commit": "npm run lint"
 		}
 	},
 	"keywords": [],
