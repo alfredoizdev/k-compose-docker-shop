@@ -1,129 +1,104 @@
-
-import { MyContext} from '../../app';
+import { MyContext } from '../../app';
 import { Product } from '../../models/Product';
 import { IProduct } from '../../interfaces/Product.interfaces';
 import { isValidToken } from '../../services/jwt';
 import { IUser } from '../../interfaces/User.interfaces';
 
- export const productResolvers = {
+export const productResolvers = {
   Query: {
-    products: async (_:any,_arg:any) => {
-		return await Product.find({}).sort({ createdAt: "desc" });
-	}
+    products: async (_: any, _arg: any) => {
+      return await Product.find({}).sort({ createdAt: 'desc' });
+    },
   },
   Mutation: {
-	addProduct: async (
-		_:any,
-		{
-			title,
-			description,
-			sku,
-			img,
-			qty, 
-			price,
-			slug,
-			sizes
-		}:IProduct,
-		{token}:MyContext
-		):Promise<IProduct> => {
+    addProduct: async (
+      _: any,
+      { title, description, sku, img, qty, price, slug, sizes }: IProduct,
+      { token }: MyContext,
+    ): Promise<IProduct> => {
+      if (!token) throw new Error('This Action is not Allowed');
 
+      let user: IUser | null = null;
 
-			if(!token) throw new Error('This Action is not Allowed');
+      try {
+        user = await isValidToken(token);
+      } catch (error) {
+        throw new Error('Token are no valid');
+      }
 
-			let user:IUser | null = null;
+      if (user.role !== 'admin') throw new Error('This Action is not Allowed only admins');
 
-			try {
-				user = await isValidToken(token);
-			} catch (error) {
-				throw new Error("Token are no valid");
-			}
+      const newProduct = Product.build({
+        title,
+        description,
+        sku,
+        img,
+        qty,
+        price,
+        slug,
+        sizes,
+      });
 
-			if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
+      newProduct.save();
 
+      return newProduct;
+    },
 
-			const newProduct = Product.build({
-					title,
-					description,
-					sku,
-					img,
-					qty,
-					price,
-					slug,
-					sizes
-				});
+    updateProduct: async (
+      _: any,
+      { id, title, description, qty, price, slug, sizes }: IProduct,
+      { token }: MyContext,
+    ) => {
+      if (!token) throw new Error('This Action is not Allowed');
 
-				newProduct.save();
+      let user: IUser | null = null;
 
-				return newProduct;
+      try {
+        user = await isValidToken(token);
+      } catch (error) {
+        throw new Error('Token are no valid');
+      }
 
-		},
+      if (user.role !== 'admin') throw new Error('This Action is not Allowed only admins');
 
-		updateProduct: async (
-			_:any,
-			{
-				id,
-				title,
-				description,
-				qty,
-				price,
-				slug,
-				sizes
-			}:IProduct,
-				{token}:MyContext
-				) => {
-					
-					if(!token) throw new Error('This Action is not Allowed');
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        {
+          title,
+          description,
+          qty,
+          price,
+          slug,
+          sizes,
+        },
+        {
+          new: true,
+        },
+      );
 
-					let user:IUser | null = null;
+      if (!updatedProduct) throw new Error('User not found');
+      return updatedProduct;
+    },
 
-					try {
-						user = await isValidToken(token);
-					} catch (error) {
-						throw new Error("Token are no valid");
-					}
+    deleteProduct: async (_: any, { id }: IProduct, { token }: MyContext): Promise<IProduct> => {
+      if (!token) throw new Error('Action not allowed');
 
-					if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
+      let user: IUser | null = null;
 
-					const updatedProduct = await Product.findByIdAndUpdate(id,{
-						title,
-						description,
-						qty,
-						price,
-						slug,
-						sizes
-					},{
-						new: true
-					});
+      try {
+        user = await isValidToken(token);
+      } catch (error) {
+        throw new Error('Token are no valid');
+      }
 
-					if(!updatedProduct) throw new Error('User not found');
-					return updatedProduct;
-		},
+      console.log(user);
 
-		deleteProduct: async (
-			_:any,
-			{id}:IProduct,
-			{token}:MyContext
-			):Promise<IProduct> => {
+      if (user.role !== 'admin') throw new Error('This Action is not Allowed only admins');
 
-				if(!token) throw new Error('Action not allowed');
+      const deletedProduct = await Product.findByIdAndDelete(id);
 
-				let user:IUser | null = null;
-
-				try {
-					user = await isValidToken(token);
-				} catch (error) {
-					throw new Error("Token are no valid");
-				}
-
-				console.log(user);
-
-				if(user.role !== "admin") throw new Error("This Action is not Allowed only admins")
-
-				const deletedProduct = await Product.findByIdAndDelete(id);
-
-				if(!deletedProduct) throw new Error('Product not found');
-				return deletedProduct;
-		}
-
-  	},
+      if (!deletedProduct) throw new Error('Product not found');
+      return deletedProduct;
+    },
+  },
 };

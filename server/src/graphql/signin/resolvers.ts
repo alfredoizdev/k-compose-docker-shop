@@ -4,31 +4,23 @@ import { Password } from '../../services/password';
 import { singToken } from '../../services/jwt';
 
 export const signinResolvers = {
-	Mutation: {
-		userLogin: async (
-		_:any,
-		{
-			email,
-			password
+  Mutation: {
+    userLogin: async (_: any, { email, password }: IUser): Promise<string> => {
+      const exitingUser = await User.findOne({ email });
 
-		}:IUser):Promise<string> => {
-		
-				const exitingUser = await User.findOne({email});
+      if (!exitingUser) {
+        throw new Error('Invalid credential');
+      }
 
-				if(!exitingUser) {
-					throw new Error('Invalid credential');
-				}
-				
-				const passwordMatch = await Password
-						.compare(exitingUser.password, password);
+      const passwordMatch = await Password.compare(exitingUser.password, password);
 
-				if(!passwordMatch) {
-					throw new Error('Invalid credential');
-				}
+      if (!passwordMatch) {
+        throw new Error('Invalid credential');
+      }
 
-				const token = singToken(exitingUser);
+      const token = singToken(exitingUser);
 
-				return token;
-		}
-	}
-}
+      return token;
+    },
+  },
+};

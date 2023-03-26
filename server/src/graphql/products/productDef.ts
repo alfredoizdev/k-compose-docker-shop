@@ -1,4 +1,3 @@
-
 export const productTypeDefs = `#graphql
 
 	type Product {

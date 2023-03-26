@@ -1,8 +1,7 @@
-import stream from "stream";
+import stream from 'stream';
 import { s3 } from '../aws/s3Client';
 
-
-export const createUploadStream = (key:any) => {
+export const createUploadStream = (key: any) => {
   const pass = new stream.PassThrough();
   return {
     writeStream: pass,
