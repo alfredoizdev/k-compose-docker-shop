@@ -204,27 +204,29 @@ const NavbarComponent = () => {
 									}
 								</>
 							}
-							<ListItem disablePadding>
-								<ListItemButton
-									onClick={handleLogOut}
-								>
-									<ListItemIcon
-										sx={{
-											minWidth: 0,
-											mr: open ? 3 : 'auto',
-											justifyContent: 'center',
-											color: 'white',
-										}}
-									>
-										<Icon>{"power_setting_new"}</Icon>
-									</ListItemIcon>
 
-									<ListItemText
-										sx={{ color: 'white', fontWeight: 100, textTransform: "uppercase" }}
-										primaryTypographyProps={{ fontSize: '18px' }}
-										primary="Log Out" />
-								</ListItemButton>
-							</ListItem>
+							{
+								id && <ListItem disablePadding>
+									<ListItemButton
+										onClick={handleLogOut}
+									>
+										<ListItemIcon
+											sx={{
+												minWidth: 0,
+												mr: open ? 3 : 'auto',
+												justifyContent: 'center',
+												color: 'white',
+											}}
+										>
+											<Icon>{"power_setting_new"}</Icon>
+										</ListItemIcon>
+										<ListItemText
+											sx={{ color: 'white', fontWeight: 100, textTransform: "uppercase" }}
+											primaryTypographyProps={{ fontSize: '18px' }}
+											primary="Log Out" />
+									</ListItemButton>
+								</ListItem>
+							}
 
 						</List>
 					</Box>

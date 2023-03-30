@@ -16,9 +16,8 @@ export const cartSlice = createSlice({
 	initialState,
 	reducers:{
 		setCartList: (state, action: PayloadAction<IProduct[]>) => {
-			if(!action.payload) return;
-
 			state.cart = action.payload;
+			localStorage.setItem('k-cart',JSON.stringify(state.cart));
 			
 		},
 		addToCart: (state, action: PayloadAction<IProduct>) => {
@@ -29,11 +28,13 @@ export const cartSlice = createSlice({
 			
 			if(!find) state.cart.unshift(action.payload);
 
+			localStorage.setItem('k-cart',JSON.stringify(state.cart));
+
 		},
 		removeFromCart: (state, action: PayloadAction<IProduct>) => {
 			
 			state.cart.splice(state.cart.findIndex((item) => item.id === action.payload.id), 1);
-			localStorage.setItem('cart',JSON.stringify(state.cart));
+			localStorage.setItem('k-cart',JSON.stringify(state.cart));
 		}
 	}
 });

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from './pages/Home.page';
 import ProductPage from './pages/Product.page';
 import LayoutMainComponent from './components/Layouts/LayoutMain.component';
@@ -18,9 +18,7 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route index element={
-						<LayoutMainComponent>
-							<HomePage />
-						</LayoutMainComponent>
+						<Navigate to="/home" />
 					} />
 					<Route path='/products' element={
 						<LayoutMainComponent>

@@ -61,8 +61,8 @@ const CartComponent = () => {
 	const popupState = usePopupState({ variant: 'popover', popupId: 'demoMenu' });
 
 	useEffect(() => {
-		if (localStorage.getItem('cart')) {
-			const list = JSON.parse(localStorage.getItem('cart')!);
+		if (localStorage.getItem('k-cart')) {
+			const list = JSON.parse(localStorage.getItem('k-cart')!);
 			dispatch(setCartList(list));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +101,7 @@ const CartComponent = () => {
 						position: "relative"
 					}}
 				>
-					{cart?.length !== 0
+					{cart?.length
 						? <List
 							sx={{
 								width: 320,
